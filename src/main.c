@@ -10,7 +10,8 @@ int main(void)
     gpio_clear(LED_PORT, LED_PIN);
 
     while(1) {
-        for(unsigned n = 0; n < rcc_ahb_frequency / 1000; n++) {
+        unsigned limit = rcc_ahb_frequency / 1000UL;
+        for(unsigned n = 0; n < limit; n++) {
             __asm__("NOP");
         }
 

@@ -21,7 +21,8 @@ CFLAGS		+= -fno-common -ffunction-sections -fdata-sections
 CFLAGS		+= $(CPU_DEFINES) --specs=picolibc.specs -flto
 CFLAGS		+= -DGIT_VERSION=\"[$(GIT_COMMITS)]-$(GIT_COMMIT)\"
 
-INCLUDE_PATHS += -Ilibs/libopencm3/include -Iinclude
+INCLUDE_DIR = include
+INCLUDE_PATHS += -Ilibs/libopencm3/include -I$(INCLUDE_DIR)
 
 RESOURCE_DIR = resources
 LINK_SCRIPT = $(RESOURCE_DIR)/stm32f07xzb.ld
@@ -75,7 +76,7 @@ clean:
 	rm -rf $(BUILD_DIR)/
 
 cppcheck:
-	cppcheck --enable=all --std=c99 $(SOURCES)
+	cppcheck --enable=all --std=c99 $(INCLUDE_PATHS) --report-type=misra-c-2023 --addon=$(RESOURCE_DIR)/misra.json --suppress=missingIncludeSystem --check-level=exhaustive $(SOURCES)
 
 $(BUILD_DIR)/stack_info : $(TARGET_ELF)
 	./avstack.pl $(OBJECTS) > $@
