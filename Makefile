@@ -49,10 +49,10 @@ TARGET_DFU = $(TARGET_ELF:%.elf=%.dfu)
 
 LIBOPENCM3 := libs/libopencm3/lib/libopencm3_stm32f0.a
 
-default: $(TARGET_ELF)
+default: $(TARGET_BIN)
 
 $(BUILD_DIR)/.git.$(GIT_COMMIT): $(LIBOPENCM3)
-	mkdir -p `dirname $@`
+	mkdir -p $(@D)
 	rm -f $(BUILD_DIR)/.git.*
 	touch $@
 
@@ -63,7 +63,7 @@ $(TARGET_BIN): $(TARGET_ELF)
 	$(OBJCOPY) -O binary $< $@
 
 $(OBJECTS): $(OBJECTS_DIR)/%.o: $(SOURCE_DIR)/%.c $(BUILD_DIR)/.git.$(GIT_COMMIT)
-	mkdir -p `dirname $@`
+	mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDE_PATHS) $< -o $@
 
 $(LIBOPENCM3) :
@@ -74,6 +74,7 @@ size: $(TARGET_ELF)
 
 clean:
 	rm -rf $(BUILD_DIR)/
+	$(MAKE) -C libs/libopencm3 TARGETS=stm32/f0 clean
 
 cppcheck:
 	cppcheck --enable=all --std=c99 $(INCLUDE_PATHS) --report-type=misra-c-2023 --addon=$(RESOURCE_DIR)/misra.json --suppress=missingIncludeSystem --check-level=exhaustive $(SOURCES)
