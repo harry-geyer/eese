@@ -31,10 +31,10 @@ LINK_SCRIPT = $(RESOURCE_DIR)/stm32f07xzb.ld
 
 LINK_FLAGS =  -Llibs/libopencm3/lib --static -nostartfiles
 LINK_FLAGS += -Llibs/libopencm3/lib/stm32/f0
+LINK_FLAGS += build/libs/nanocobs/nanocobs.a
 LINK_FLAGS += -T$(LINK_SCRIPT) -lopencm3_stm32f0
 LINK_FLAGS += -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group -Wl,--gc-sections
 LINK_FLAGS += $(CPU_DEFINES) --specs=picolibc.specs
-LINK_FLAGS += -Lbuild/libs/nanocobs/nanocobs.a
 
 SOURCE_DIR = src
 SOURCES += $(shell find "$(SOURCE_DIR)" -type f -name "*.c")
