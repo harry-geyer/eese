@@ -5,6 +5,7 @@ CC = $(TOOLCHAIN)-gcc
 OBJCOPY = $(TOOLCHAIN)-objcopy
 OBJDUMP = $(TOOLCHAIN)-objdump
 SIZE = $(TOOLCHAIN)-size
+AR = $(TOOLCHAIN)-ar
 
 #Target CPU options
 CPU_DEFINES = -mthumb -mcpu=cortex-m0 -DSTM32F0 -pedantic
@@ -13,7 +14,7 @@ GIT_COMMITS != git rev-list --count HEAD
 GIT_COMMIT != git log -n 1 --format="%h-%f"
 
 #Compiler options
-CFLAGS		+= -Os -g -c -std=gnu11
+CFLAGS		+= -Os -g -std=gnu11
 CFLAGS		+= -Wall -Wextra -Werror -Wno-unused-parameter -Wno-address-of-packed-member
 CFLAGS		+= -fstack-usage -Wstack-usage=100
 CFLAGS		+= -MMD -MP
@@ -23,6 +24,7 @@ CFLAGS		+= -DGIT_VERSION=\"[$(GIT_COMMITS)]-$(GIT_COMMIT)\"
 
 INCLUDE_DIR = include
 INCLUDE_PATHS += -Ilibs/libopencm3/include -I$(INCLUDE_DIR)
+INCLUDE_PATHS += -Ilibs/nanocobs
 
 RESOURCE_DIR = resources
 LINK_SCRIPT = $(RESOURCE_DIR)/stm32f07xzb.ld
@@ -32,6 +34,7 @@ LINK_FLAGS += -Llibs/libopencm3/lib/stm32/f0
 LINK_FLAGS += -T$(LINK_SCRIPT) -lopencm3_stm32f0
 LINK_FLAGS += -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group -Wl,--gc-sections
 LINK_FLAGS += $(CPU_DEFINES) --specs=picolibc.specs
+LINK_FLAGS += -Lbuild/libs/nanocobs/nanocobs.a
 
 SOURCE_DIR = src
 SOURCES += $(shell find "$(SOURCE_DIR)" -type f -name "*.c")
@@ -48,6 +51,7 @@ TARGET_BIN = $(TARGET_ELF:%.elf=%.bin)
 TARGET_DFU = $(TARGET_ELF:%.elf=%.dfu)
 
 LIBOPENCM3 := libs/libopencm3/lib/libopencm3_stm32f0.a
+NANOCOBS := build/libs/nanocobs/nanocobs.a
 
 default: $(TARGET_BIN)
 
@@ -56,7 +60,7 @@ $(BUILD_DIR)/.git.$(GIT_COMMIT): $(LIBOPENCM3)
 	rm -f $(BUILD_DIR)/.git.*
 	touch $@
 
-$(TARGET_ELF): $(LIBS) $(OBJECTS) $(LINK_SCRIPT)
+$(TARGET_ELF): $(LIBS) $(OBJECTS) $(LINK_SCRIPT) $(NANOCOBS)
 	$(CC) $(OBJECTS) $(LINK_FLAGS) -o $(TARGET_ELF)
 
 $(TARGET_BIN): $(TARGET_ELF)
@@ -64,9 +68,9 @@ $(TARGET_BIN): $(TARGET_ELF)
 
 $(OBJECTS): $(OBJECTS_DIR)/%.o: $(SOURCE_DIR)/%.c $(BUILD_DIR)/.git.$(GIT_COMMIT)
 	mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(INCLUDE_PATHS) $< -o $@
+	$(CC) -c $(CFLAGS) $(INCLUDE_PATHS) $< -o $@
 
-$(LIBOPENCM3) :
+$(LIBOPENCM3):
 	$(MAKE) -C libs/libopencm3 TARGETS=stm32/f0
 
 size: $(TARGET_ELF)
@@ -85,4 +89,5 @@ $(BUILD_DIR)/stack_info : $(TARGET_ELF)
 stack_info: $(BUILD_DIR)/stack_info
 	cat $(BUILD_DIR)/stack_info
 
+include libs/nanocobs.mk
 -include $(DEPS)

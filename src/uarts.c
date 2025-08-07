@@ -23,14 +23,14 @@ typedef enum {
     UARTS_STOP_BITS_1 = 0,
     UARTS_STOP_BITS_1_5 = 1,
     UARTS_STOP_BITS_2 = 2,
-} uarts_stop_bits_t;
+} _uarts_stop_bits_t;
 
 
 typedef enum {
     UART_PARITY_NONE = 0,
     UART_PARITY_ODD = 1,
     UART_PARITY_EVEN = 2,
-} uarts_parity_t;
+} _uarts_parity_t;
 
 
 static bool _uarts_getc(uint32_t uart, char* c);
@@ -67,7 +67,7 @@ void __attribute__((interrupt)) usart3_4_isr(void)
     if (!_uarts_getc(UART_ITF_UART, &c)) {
         return;
     }
-    uart_rings_in_add(&c, 1);
+    uart_rings_in_add((uint8_t*)&c, 1);
 }
 
 
