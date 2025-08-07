@@ -117,6 +117,11 @@ static uint32_t _itf_process_packet(uint8_t* buf, uint32_t len)
         /* packet too small, assume broken */
         return len;
     }
+    if (crc32(packet, out_dec_dst_len, CRC32_DEFAULT_START)) {
+        /* CRC32 of whole packet (including embedded CRC) will be 0 if
+         * correct, if incorrect, throw away packet */
+        return out_enc_src_len;
+    }
     _itf_packet_header_t* header = (_itf_packet_header_t*)packet;
     if (ITF_PACKET_VERSION != header->version) {
         /* wrong packet version */
