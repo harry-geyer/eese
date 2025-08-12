@@ -40,14 +40,16 @@ uint32_t ring_buf_read_until(ring_buf_t* ring, uint8_t* data, uint32_t count, ui
     uint32_t i = 0;
     for (; i < count; i++) {
         uint32_t new_pos = (ring->r_pos + 1) % ring->size;
-        if (new_pos == ring->w_pos) {
-            /* No more space */
-            break;
-        }
         uint8_t c = ring->buf[new_pos];
         data[i] = c;
         ring->r_pos = new_pos;
         if (c == until) {
+            i++;
+            break;
+        }
+        if (new_pos == ring->w_pos) {
+            /* No more space */
+            i++;
             break;
         }
     }
@@ -61,12 +63,13 @@ static uint32_t _ring_buf_peek(ring_buf_t* ring, uint8_t* data, uint32_t count, 
     uint32_t i = 0;
     for (; i < count; i++) {
         uint32_t new_pos = (r_pos + 1) % ring->size;
-        if (new_pos == ring->w_pos) {
-            /* No more space */
-            break;
-        }
         data[i] = ring->buf[new_pos];
         r_pos = new_pos;
+        if (new_pos == ring->w_pos) {
+            /* No more space */
+            i++;
+            break;
+        }
     }
     if (end_pos) {
         *end_pos = r_pos;

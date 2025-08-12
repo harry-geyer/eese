@@ -15,8 +15,8 @@ typedef struct {
 {                                                                       \
     .buf = _buf,                                                        \
     .size = _size,                                                      \
-    .r_pos = 0,                                                         \
-    .w_pos = 0,                                                         \
+    .r_pos = _size - 1,                                                 \
+    .w_pos = 0                                                          \
 }
 
 

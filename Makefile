@@ -89,5 +89,8 @@ $(BUILD_DIR)/stack_info : $(TARGET_ELF)
 stack_info: $(BUILD_DIR)/stack_info
 	cat $(BUILD_DIR)/stack_info
 
+.PHONY: size clean cppcheck stack_info test
+
 include libs/nanocobs.mk
+include tests/tests.mk
 -include $(DEPS)
