@@ -31,3 +31,5 @@ $(BUILD_TESTS_DIR)/.complete: $(addprefix $(BUILD_TESTS_DIR)/.,$(TESTS))
 	pytest --rootdir=$(BUILD_TESTS_DIR) -v tests/
 
 test: $(BUILD_TESTS_DIR)/.complete
+	$(MAKE) -C libs/nanocobs
+	./libs/nanocobs/build/cobs_unittests

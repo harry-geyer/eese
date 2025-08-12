@@ -55,7 +55,7 @@ NANOCOBS := build/libs/nanocobs/nanocobs.a
 
 default: $(TARGET_BIN)
 
-$(BUILD_DIR)/.git.$(GIT_COMMIT): $(LIBOPENCM3)
+$(BUILD_DIR)/.git.$(GIT_COMMIT):
 	mkdir -p $(@D)
 	rm -f $(BUILD_DIR)/.git.*
 	touch $@
@@ -66,7 +66,7 @@ $(TARGET_ELF): $(LIBS) $(OBJECTS) $(LINK_SCRIPT) $(NANOCOBS)
 $(TARGET_BIN): $(TARGET_ELF)
 	$(OBJCOPY) -O binary $< $@
 
-$(OBJECTS): $(OBJECTS_DIR)/%.o: $(SOURCE_DIR)/%.c $(BUILD_DIR)/.git.$(GIT_COMMIT)
+$(OBJECTS): $(OBJECTS_DIR)/%.o: $(SOURCE_DIR)/%.c $(BUILD_DIR)/.git.$(GIT_COMMIT) $(LIBOPENCM3)
 	mkdir -p $(@D)
 	$(CC) -c $(CFLAGS) $(INCLUDE_PATHS) $< -o $@
 
@@ -79,6 +79,7 @@ size: $(TARGET_ELF)
 clean:
 	rm -rf $(BUILD_DIR)/
 	$(MAKE) -C libs/libopencm3 TARGETS=stm32/f0 clean
+	$(MAKE) -C libs/nanocobs clean
 
 cppcheck:
 	cppcheck --enable=all --std=c99 $(INCLUDE_PATHS) --report-type=misra-c-2023 --addon=$(RESOURCE_DIR)/misra.json --suppress=missingIncludeSystem --check-level=exhaustive $(SOURCES)
