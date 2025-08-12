@@ -3,8 +3,9 @@
 #include "cobs.h"
 
 #include "uart_rings.h"
-#include "crc32.h"
+#include "crc.h"
 #include "system.h"
+#include "itf.h"
 
 
 #define ITF_PACKET_BUF_SIZE                 128
@@ -41,6 +42,12 @@ static uint8_t _itf_packet_buf[ITF_PACKET_BUF_SIZE] = {0};
 bool itf_send_nop(void)
 {
     return _itf_send_packet(ITF_PACKET_OUT_TYPE_NOP, NULL, 0);
+}
+
+
+bool itf_send_measurements(itf_measurements_t* measurements)
+{
+    return _itf_send_packet(ITF_PACKET_OUT_TYPE_MEASUREMENTS, (uint8_t*)measurements, sizeof(itf_measurements_t));
 }
 
 
