@@ -19,7 +19,7 @@ CFLAGS		+= -Wall -Wextra -Werror -Wno-unused-parameter -Wno-address-of-packed-me
 CFLAGS		+= -fstack-usage -Wstack-usage=100
 CFLAGS		+= -MMD -MP
 CFLAGS		+= -fno-common -ffunction-sections -fdata-sections
-CFLAGS		+= $(CPU_DEFINES) --specs=picolibc.specs -flto
+CFLAGS		+= $(CPU_DEFINES) --specs=picolibc.specs
 CFLAGS		+= -DGIT_VERSION=\"[$(GIT_COMMITS)]-$(GIT_COMMIT)\"
 
 INCLUDE_DIR = include
@@ -77,7 +77,7 @@ size: $(TARGET_ELF)
 	$(SIZE) $(TARGET_ELF)
 
 clean:
-	rm -rf $(BUILD_DIR)/
+	rm -rf $(BUILD_DIR)/ .coverage
 	$(MAKE) -C libs/libopencm3 TARGETS=stm32/f0 clean
 	$(MAKE) -C libs/nanocobs clean
 

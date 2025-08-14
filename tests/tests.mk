@@ -28,8 +28,13 @@ $(eval $(call TEST_OBJ_BUILD_RULE,crc,$(SOURCE_DIR)/crc.c))
 $(eval $(call TEST_OBJ_BUILD_RULE,cobs,libs/nanocobs/cobs.c))
 
 $(BUILD_TESTS_DIR)/.complete: $(addprefix $(BUILD_TESTS_DIR)/.,$(TESTS))
-	pytest --rootdir=$(BUILD_TESTS_DIR) -v tests/
+	pytest --cov=python --rootdir=$(BUILD_TESTS_DIR) -v tests/
 
 test: $(BUILD_TESTS_DIR)/.complete
 	$(MAKE) -C libs/nanocobs
 	./libs/nanocobs/build/cobs_unittests
+
+coverage: test
+	mkdir -p $(BUILD_DIR)/coverage
+	python3-coverage html -d $(BUILD_DIR)/coverage
+	sensible-browser $(BUILD_DIR)/coverage/index.html

@@ -1,3 +1,4 @@
 build/
 resources/.misra
 *__pycache__/
+.coverage
