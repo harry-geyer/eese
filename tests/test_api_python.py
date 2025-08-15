@@ -8,9 +8,9 @@ from unittest.mock import patch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir, "api"))
 
-from python import Connection
-from python.connection import PacketInType
-from python.cobs import encode
+from pyeese import Connection
+from pyeese.connection import PacketInType
+from pyeese.cobs import encode
 
 
 def _get_connection():
@@ -30,7 +30,7 @@ def _send_packet(fd: int, type_: PacketInType, payload: bytes = b""):
     enc += (0).to_bytes(1)
     os.write(fd, enc)
 
-@patch('python.Connection._handle_nop')
+@patch('pyeese.Connection._handle_nop')
 def test_connection(handle_nop):
     master_fd, conn = _get_connection()
     conn.send_nop()
